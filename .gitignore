@@ -45,3 +45,10 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Directories
+/packages/
+/TestResults/
+/.vs/
+/UnitTestProject1/bin/
+/UnitTestProject1/obj/
