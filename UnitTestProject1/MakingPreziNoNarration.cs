@@ -2,7 +2,7 @@
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support;
 using OpenQA.Selenium.Interactions;
 using NUnit.Framework;
@@ -22,7 +22,7 @@ namespace Dude
         [TestInitialize]
         public void TestSetup()
        {
-            driver = new FirefoxDriver();
+            driver = new ChromeDriver();
             driver.Navigate().GoToUrl("http://goo.gl/aSY89E");
             Thread.Sleep(2000);
             driver.FindElement(By.CssSelector("body > div.container > div > form > button")).Click();
@@ -66,6 +66,16 @@ namespace Dude
         public void PreziUploadWithNarration()
         {
 
+        }
+        [TestMethod]
+        public void RandomTest()
+        {
+            driver.Navigate().GoToUrl("http://www.megafileupload.com/");
+            Thread.Sleep(3000);
+            upload = driver.FindElement(By.CssSelector(".slider-btn"));
+            upload.SendKeys("C: \\Users\\Saurav\\Downloads\\GGPrezi.pptx");
+            Thread.Sleep(10000);
+           
         }
     }
 }
