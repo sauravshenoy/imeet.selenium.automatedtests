@@ -4,15 +4,16 @@ using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support;
 using OpenQA.Selenium.Interactions;
 using NUnit.Framework;
 using System.Linq;
 using System.Runtime;
-using Toolkit.Core.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Toolkit.Core.Reflection;
+using UnitTestProject1.Properties;
 
 namespace Dude
 {
@@ -34,12 +35,14 @@ namespace Dude
         int arewethereyet = 0;
         int ctaslidenumber = 4;
         String Cssforctaslide = "#chapter > option:nth-child(";
+        String webcam = "webcamtest88";
 
         [TestInitialize]
         public void TestSetup()
         {
-            driver = new ChromeDriver();
-            driver.Navigate().GoToUrl("http://goo.gl/aSY89E");
+            driver = new InternetExplorerDriver();
+            //driver.Navigate().GoToUrl("http://goo.gl/aSY89E");
+            driver.Navigate().GoToUrl(UnitTestProject1.Properties.Settings.Default.ImeetPage);
             Thread.Sleep(2000);
             driver.FindElement(By.CssSelector("body > div.container > div > form > button")).Click();
             Thread.Sleep(2000);
@@ -53,7 +56,8 @@ namespace Dude
         [TestMethod]
         public void CreatePrezi()
         {
-            driver.Navigate().GoToUrl("http://sales.imeet.com/my-channel/Presentations/New");
+            String url = UnitTestProject1.Properties.Settings.Default.PresentationPage + "my - channel / Presentations / New";
+            driver.Navigate().GoToUrl(url);
             driver.FindElement(By.CssSelector("#upload-slides-container")).Click();
             Thread.Sleep(3000);
             prezititle = driver.FindElement(By.CssSelector("#presoTitle"));
@@ -62,41 +66,42 @@ namespace Dude
             NameOfYourPresentation = "My Computer Made This!!";
             prezititle.SendKeys(NameOfYourPresentation);
             Thread.Sleep(3000);
-            //upoad the presentation
-            //SendKeys method only seems to work sometimes, but there is no work around to this, 
-            //it is just a problem with Selenium Webdriver as they are not friendly to non-browser windows
             driver.FindElement(By.CssSelector("#slide-upload > div > form > div:nth-child(4) > label > input[type=\"radio\"]")).Click();
-            Thread.Sleep(1350);
-            IList<IWebElement> uploadbutton = driver.FindElements(By.CssSelector("#slide-upload > div > form > div:nth-child(2) > input[type=\"hidden\"]:nth-child(5)"));
-            if (uploadbutton.Count > 0)
+            Thread.Sleep(3000);
+            //upoad the presentation
+            //SendKeys method only seems to work sometimes, but there is no work around to this, it is just a problem with Selenium Webdriver as they are not friendly to non-browser windows
+            String pathofinternalfile = "C:";
+            String trytouupload = "input type=\"file\"";
+            if (driver.FindElements(By.PartialLinkText(trytouupload)).Count > 0)
             {
-                Console.WriteLine("Getting Closer Bro!");
-                IWebElement almost = uploadbutton.First();
-                almost.SendKeys(@"C:\Users\Saurav\Documents\hi");
+                driver.FindElement(By.PartialLinkText(trytouupload)).SendKeys(pathofinternalfile);
+                Thread.Sleep(30000);
+                driver.FindElement(By.CssSelector("#WebcamReady > div > div.upper-section > div > button")).Click();
+                Thread.Sleep(60000);
+                if (driver.FindElements(By.CssSelector("#body > div.body-bg > div.presentation-edit > div.container > div.row.details-header > div > div.col-xs-12.col-sm-8 > div > p:nth-child(3) > a")).Count > 0)
+                {
+                    Console.Write("Website code is correct, uploading of presentation was probably successful;next test will ensure it was uploaded");
+                }
+                    
             }
             else
             {
-                driver.Quit();
+               Console.WriteLine("Problem with Site:must activate/unhide css for upload button");
             }
-            //clicks continue
 
-            driver.FindElement(By.CssSelector("div.actions:nth-child(7) > button:nth-child(2)")).Click();
-            Thread.Sleep(40000);
-            //if you want to see the preview
-            driver.FindElement(By.CssSelector("body > div.body-bg > div > div.container > div.row.details-header > div > div.col-xs-12.col-sm-8 > div > p:nth-child(3) > a"));
         }
         [TestMethod]
-        public void WasPreziCreated()
+        public void CreateWebcamPartially()
         {
-            //based on if statement, if it does upload successful line is printed, otherwise failure is notified
-            if (driver.FindElements(By.PartialLinkText(NameOfYourPresentation)).Count > 0)
-            {
-                Console.WriteLine("Presentation was successfully uploaded!");
-            }
-            else
-            {
-                Console.WriteLine("Presentation was not created :(");
-            }
+            String url = UnitTestProject1.Properties.Settings.Default.PresentationPage + "my - channel / Presentations / New";
+            driver.Navigate().GoToUrl(url);
+            Thread.Sleep(2000);
+            driver.FindElement(By.CssSelector("#tool-selection > div:nth-child(2) > div:nth-child(3) > div > h3")).Click();
+            Thread.Sleep(3000);
+            driver.FindElement(By.CssSelector("#presoTitle")).SendKeys(webcam);
+            driver.FindElement(By.CssSelector("#webcam > div > form > div.actions > button.btn.btn-primary")).Click();
+            driver.FindElement(By.CssSelector("#WebcamReady > div > div.upper-section > div > button")).Click();
+            Console.Write("WebcamTest works till Flash Player.");
         }
         [TestMethod]
         public void EmailShare()
@@ -1174,53 +1179,7 @@ namespace Dude
         }
     }
 }
-[TestClass]
-    public class BugConfirmations
-    {
-        IWebDriver chromey;
-        IWebDriver twoatonce;
-        IWebElement uploadexternaldoc;
-        IWebElement plswork;
-        [TestInitialize]
-        public void Setoop()
-        {
-            chromey = new ChromeDriver();
-        chromey.Navigate().GoToUrl("http://bleacherreport.com/articles/2637700-left-by-teammates-overlooked-by-fans-damian-lillard-finds-anger-is-an-energy");
 
-    }
-        [TestMethod]
-        public void BRFBTEST()
-        {
-        Console.WriteLine(chromey.CurrentWindowHandle);
-        Thread.Sleep(5000);
-        chromey.FindElement(By.CssSelector("#article-slider > article > footer > ul > li.share-button.button.button--facebook.button--medium > a > span.share-text")).Click();
-        chromey.SwitchTo().Window(chromey.WindowHandles.Last());
-        Thread.Sleep(5000);
-        chromey.FindElement(By.CssSelector("#email")).SendKeys("omgitworked!!!!");
-        Console.WriteLine(chromey.WindowHandles.Last());
-        Thread.Sleep(10000);
-        }
-    [TestMethod]
-        public void UploadFirefoxTest()
-    { 
-        chromey.Navigate().GoToUrl("https://accounts.google.com/ServiceLogin?service=mail&passive=true&rm=false&continue=https://mail.google.com/mail/&ss=1&scc=1&ltmpl=default&ltmplcache=2&emr=1&osid=1#identifier");
-        chromey.FindElement(By.CssSelector("#gmail-sign-in")).Click();
-        IWebElement signin = chromey.FindElement(By.CssSelector("#Email"));
-         signin.SendKeys("sauravshenoy9@gmail.com");
-        chromey.FindElement(By.CssSelector("#next")).Click();
-        Thread.Sleep(5000);
-        chromey.FindElement(By.CssSelector("#Passwd")).SendKeys("beconfident247");
-        chromey.FindElement(By.CssSelector("#signIn")).Click();
-        Thread.Sleep(20000);
-        chromey.FindElement(By.XPath("//*[@id=\":q7\"]")).SendKeys(@"C:\Users\Saurav\Documents\hi");
-        Thread.Sleep(3000);
-        }
-        [TestCleanup]
-        public void Closeit()
-        {
-            chromey.Quit();
-        }
-    }
 
     
 
